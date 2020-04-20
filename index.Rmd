@@ -1,0 +1,214 @@
+---
+title: "Everyday Music Listening Portfolio"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: united
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(reshape2)
+library(haven)
+```
+
+```{r}
+
+df = data.frame(x = (-10:10), y = (-10:10)^2)
+
+interactiveplot = ggplotly(ggplot(df, aes(x = x, y = y)) +
+           geom_point() +
+           geom_smooth() +
+             theme_minimal())
+
+data <- read_sav("C:/Users/Gebruiker/OneDrive/Psychologie/Jaar 3/everyday music listening/music-emotion.sav")
+data[is.na(data)] = round(mean(data$Funk, na.rm=T), 0)
+
+colnames(data)[29:32] = c("Depression", "Anxiety", "Stress", "Happiness")
+
+
+```
+
+Music, mood, and emotions: the main effects
+=====================
+
+
+Sidebar {.sidebar}
+------------------------
+
+What does your music habits say about your emotions?
+
+
+Music can elicit positive and negative emotions, also serving as a tool for emotion regulation. The goal of our research is to examine how everyday music listening habits are related to emotional states. Our main assumption is that emotional states of the last month are related to the features of the most played songs on Spotify.
+
+
+
+Column 1
+-----------------------
+
+###
+
+```{r}
+
+
+stomp = data[,5:27]
+scores = data[,29:32]
+
+cor.stompscores = cor(stomp, scores)
+
+melt.corscores <- melt(cor.stompscores)
+
+plot.corscores = 
+  melt.corscores %>% 
+  ggplot(aes(x = Var2, y = Var1, fill = value)) +
+  geom_tile() + 
+  theme_minimal() + 
+  scale_fill_gradient(low = "black", high = "red") +
+  labs(title = "Correlation between STOMP and questionnaires", x = "", y = "")
+
+ggplotly(plot.corscores)
+  
+```
+
+###
+
+```{r}
+corona = data[,35:37]
+cor.corona = cor(corona, scores)
+corona = data %>%
+  select(29:32, 35:37)
+
+corona1 = melt(corona[,-c(5,6)], id = "Energy")
+corona2 = melt(corona[,-c(6,7)], id = "ListeningFrequency")
+corona3 = melt(corona[,-c(5, 7)], id = "Valence")
+  
+```
+
+
+```{r}
+
+plot.scores = scores %>%
+  melt() %>%
+  ggplot(aes(x = variable, y = value, group = variable, fill = variable)) + 
+  geom_violin() + 
+  labs(y = "Sumscore", x = "", title = "") +
+  scale_color_viridis_d() + 
+  theme_minimal()   + theme(legend.title = element_blank())
+
+
+tab.age = data %>% count(Age) %>% arrange(desc(n))
+  
+plot.age = 
+  tab.age %>%
+  ggplot(aes(y = n, x = Age)) + geom_col() +
+  labs(x = "Age count", title = "") +
+  theme_minimal() 
+
+
+subplot(ggplotly(plot.scores), ggplotly(plot.age), titleX = T, titleY = T)
+
+```
+
+
+
+
+
+
+Column {data-width=150}
+---------------------
+
+###
+
+So, we measured people's score on depression, anxiety, stress and happiness. How do they relate to the music they listen to? Some standouts: people who listen to punk seem more anxious, and people who listen to soundtracks seem less depressed, whereas people who listen to rock seem more depressed. Why could this be?
+
+###
+
+As you can see, we ended up with quite a wide variety of data. The scores on the questionnaire vary enough to give us some interesting results, although we are happy to see that most of the people who answered our questionnaire feel happy and aren't stressed :). Our data is a bit biased towards students, which you can tell from the age. Students will likely listen to different kind of music than the general population, so it will be interesting to see if this is will be a confounder in the analysis. 
+
+
+
+Introduction {.storyboard}
+=======================
+
+### how are emotions, mood and music related?
+
+```{r}
+
+
+
+```
+
+*** 
+
+Sample text
+
+
+### Another chart
+
+```{r}
+ggplot(df, aes(x = -x, y = -y)) + 
+         geom_point() +
+         geom_smooth()
+```
+
+*** 
+
+some more text
+
+
+The questionnaires 
+=======================
+
+### the questionnaires
+
+```{r}
+plot(x=1)
+```
+
+***
+
+even more text
+
+
+Analysis and results{.storyboard}
+======================
+
+### Our data...
+
+***
+
+### ... in visualizations
+
+***
+
+
+Discussion: Our main take-aways
+===================
+
+Col
+-------------
+
+### chart
+
+### chart
+
+### chart
+
+
+Column
+--------------
+
+
+### chart
+
+### chart
+
+
+Column
+--------------
+
+### chart
