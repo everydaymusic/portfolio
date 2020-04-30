@@ -1,5 +1,5 @@
 ---
-title: "Everyday Music Listening Portfolio"
+title: "Music, mood, and emotions"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -14,26 +14,34 @@ library(ggplot2)
 library(plotly)
 library(reshape2)
 library(haven)
+
+knitr::opts_knit$set(root.dir = "./data")
+
 ```
 
 ```{r}
 
-df = data.frame(x = (-10:10), y = (-10:10)^2)
 
-interactiveplot = ggplotly(ggplot(df, aes(x = x, y = y)) +
+df = data.frame(x = (-10:10), y = (-10:10)^2)
+interactiveplot = 
+  ggplotly(
+  ggplot(df, aes(x = x, y = y)) +
            geom_point() +
            geom_smooth() +
-             theme_minimal())
+             theme_minimal()
+  )
 
-data <- read_sav("C:/Users/Gebruiker/OneDrive/Psychologie/Jaar 3/everyday music listening/music-emotion.sav")
-data[is.na(data)] = round(mean(data$Funk, na.rm=T), 0)
 
-colnames(data)[29:32] = c("Depression", "Anxiety", "Stress", "Happiness")
 
+load("features.Rdata")
+load("data_features.RData")
+load("features_list.RData")
+data = read.csv("data_new.csv")
+df.gems = read.csv("gemsscore.csv")
 
 ```
 
-Music, mood, and emotions: the main effects
+The main effects
 =====================
 
 
@@ -45,6 +53,8 @@ What does your music habits say about your emotions?
 
 Music can elicit positive and negative emotions, also serving as a tool for emotion regulation. The goal of our research is to examine how everyday music listening habits are related to emotional states. Our main assumption is that emotional states of the last month are related to the features of the most played songs on Spotify.
 
+We had people fill out questionnaires, send us a playlist of their recently played music on Spotify, and went looking for patterns. Music and emotions are likely related somehow, and these days we listen to a lot of music on Spotify. What does Spotify know about us from the music we listen to? Would it be possible for Spotify to know whether we are feeling down, or generally happy? Our research should provide some useful insights into answering these questions. As we already know from the results (but you don't), there are certainly some patterns worth exploring. To give you a taste, you can find some of our preliminary findings on the current page. 
+
 
 
 Column 1
@@ -55,8 +65,8 @@ Column 1
 ```{r}
 
 
-stomp = data[,5:27]
-scores = data[,29:32]
+stomp = data[,7:29]
+scores = data[,31:34]
 
 cor.stompscores = cor(stomp, scores)
 
@@ -68,7 +78,7 @@ plot.corscores =
   geom_tile() + 
   theme_minimal() + 
   scale_fill_gradient(low = "black", high = "red") +
-  labs(title = "Correlation between STOMP and questionnaires", x = "", y = "")
+  labs(title = "Correlation between STOMP and questionnaires", x = " ", y = " ")
 
 ggplotly(plot.corscores)
   
@@ -77,14 +87,17 @@ ggplotly(plot.corscores)
 ###
 
 ```{r}
-corona = data[,35:37]
+
+#You can ignore this 
+
+corona = data[,37:39]
 cor.corona = cor(corona, scores)
 corona = data %>%
-  select(29:32, 35:37)
+  select(31:34, 37:39)
 
-corona1 = melt(corona[,-c(5,6)], id = "Energy")
-corona2 = melt(corona[,-c(6,7)], id = "ListeningFrequency")
-corona3 = melt(corona[,-c(5, 7)], id = "Valence")
+#corona1 = melt(corona[,-c(5,6)], id = "Energy")
+#corona2 = melt(corona[,-c(6,7)], id = "ListeningFrequency")
+#corona3 = melt(corona[,-c(5, 7)], id = "Valence")
   
 ```
 
@@ -114,10 +127,6 @@ subplot(ggplotly(plot.scores), ggplotly(plot.age), titleX = T, titleY = T)
 ```
 
 
-
-
-
-
 Column {data-width=150}
 ---------------------
 
@@ -130,60 +139,180 @@ So, we measured people's score on depression, anxiety, stress and happiness. How
 As you can see, we ended up with quite a wide variety of data. The scores on the questionnaire vary enough to give us some interesting results, although we are happy to see that most of the people who answered our questionnaire feel happy and aren't stressed :). Our data is a bit biased towards students, which you can tell from the age. Students will likely listen to different kind of music than the general population, so it will be interesting to see if this is will be a confounder in the analysis. 
 
 
+Theory
+========================
 
-Introduction {.storyboard}
+Column
+-------------------------
+
+What is known so far?
+ 
+Music can elicit positive and negative emotions, and can also be a tool for emotion regulation. (Cook et al, 2018)
+
+Studies have found a relationship between various genres of music (rock, metal, hip hop) and behaviours, such as antisocial behaviour, vulnerability to suicide, and drug use. (Scherer et al., 2001)
+
+Music preference is indicative of an underlying emotional disturbance or vulnerability (Scherer et al., 2001)
+
+Through cognitive appraisal, the aesthetic context of music is recognized and emotions are induced (Kawakami, Furukawa, Katahira & Okanoya, 2013).
+
+
+
+Our research {.storyboard}
 =======================
 
 ### how are emotions, mood and music related?
 
 ```{r}
 
+interactiveplot
 
 
 ```
 
 *** 
 
-Sample text
+test
 
 
-### Another chart
+
+All {data-navmenu="The Results"}
+==============================
+
+
+Column 
+---------------------
+
+###
+
 
 ```{r}
-ggplot(df, aes(x = -x, y = -y)) + 
-         geom_point() +
-         geom_smooth()
+#Correlation between questionnaires and features
+cor.qf = data.frame(cor(data[,31:34], data[,40:50]))
+cor.qf[cor.qf > -0.1 & cor.qf < 0.1] = 0 #sets low correlations to NA
+
+#melt.corqf <- melt(as.matrix(cor.qf))
+
+
+plot.qf = 
+  cor.qf %>%
+  select(-key, -tempo) %>%
+  as.matrix() %>%
+  melt() %>%
+  ggplot(aes(x = Var2, y = Var1, fill = value)) +
+  geom_tile() + 
+  theme_minimal() + 
+  scale_fill_gradient2(low = "red", high = "black", mid = "white") +
+  labs(title = "Correlation between Spotify features and questionnaires")
+
+plot.qf
+
 ```
 
-*** 
 
-some more text
+Column {data-width=150}
+---------------------
+
+###
+
+From the theory it follows that there should be some kind of relationship between psychological characteristics and the music people listen to. Although Spotify features are vague and nobody really knows what they mean (including Spotify themselves), they do provide us with interesting statistics on music. To analyse the On Repeat playlists the participants provided us with, we calculated the mean for the Spotify features of every playlist. We then compared these features to the participant's score on the four psychology questionnaires. What will the songs people listen to on Spotify tell us about their emotional states, and conversely, what will their emotional states tell us about what music they listen to?
+
+To find the patterns, we calculated the correlation between the scores on the questionnaires and the Spotify features. All the significant correlations (below -0.1 and above 0.1) are shown on the left. There seem to be relationships- more happy and anxious people like to listen to more speechy music. Higher depression scores seem to imply lower values of most features, but also liveness- do depressed people dislike concerts or is there something else going on? 
 
 
-The questionnaires 
-=======================
 
-### the questionnaires
+
+Depression {data-navmenu="The Results" .storyboard}
+==============================
+
+### Analysis
+
+***
+
+### What does it mean?
+
+***
+
+
+
+
+Anxiety {data-navmenu="The Results" .storyboard}
+==============================
+
+
+### Analysis
+
+***
+
+### What does it mean?
+
+***
+
+
+Stress {data-navmenu="The Results" .storyboard}
+==============================
+
+
+### Analysis
+
+***
+
+### What does it mean?
+
+***
+
+
+Happiness {data-navmenu="The Results" .storyboard}
+==============================
+
+
+### Analysis
+
+***
+
+### What does it mean?
+
+***
+
+Mood
+============================
+
+Column
+--------------------
+
+
+###
 
 ```{r}
-plot(x=1)
+
+cor.gems = cor(df.gems[,-1], data[,40:50])
+cor.gems[cor.gems > -0.1 & cor.gems < 0.1] = 0
+
+testdat = cor.gems %>%melt()
+
+
+plot.corgems = 
+  testdat %>%
+  ggplot(aes(x = Var2, y = Var1, fill = value)) +
+  geom_tile(show.legend = F) +
+  #scale_fill_gradient2(low = "red", high = "blue", mid = "grey", na.value = "grey") 
+  labs(title = "Correlation between Spotify features and GEMS", x = NULL, y = NULL) +
+  theme_minimal() 
+
+
+plot.corgems
+
+
+
 ```
 
-***
 
-even more text
+Column {data-width=150}
+---------------------
 
+###
 
-Analysis and results{.storyboard}
-======================
+text about mood
 
-### Our data...
-
-***
-
-### ... in visualizations
-
-***
 
 
 Discussion: Our main take-aways
@@ -212,3 +341,5 @@ Column
 --------------
 
 ### chart
+
+
