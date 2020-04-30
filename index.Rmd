@@ -156,6 +156,10 @@ Music preference is indicative of an underlying emotional disturbance or vulnera
 Through cognitive appraisal, the aesthetic context of music is recognized and emotions are induced (Kawakami, Furukawa, Katahira & Okanoya, 2013).
 
 
+Another study found out why sad music exists in the first place (Kawakami, Furukawa, Katahira & Okanoya, 2013). They found that when listening to sad music, people’s felt emotions are different from the perceived emotions. One of their explanations for this was that people felt pleasant emotions when listening to sad music due to something called sweet anticipation. People expected to feel sad emotions and due to having successfully predicted this, they experienced pleasant emotions. This comes back to mood adjustment; it implies that people listen to sad music on purpose to feel sad emotions. Two of the same researchers also researched if personality traits relate to people’s consumption of sad music (Kawakami & Katahira, 2015). They found that several sub-components of the personality trait empathy were positively related to the consumption of sad music.
+
+
+
 
 Our research {.storyboard}
 =======================
@@ -284,8 +288,22 @@ Column
 
 ```{r}
 
+layout <- list(
+  title = list(text = "Correlation Matrix for variables"), 
+  width = 800, 
+  xaxis = list(tickfont = list(size = 8)), 
+  yaxis = list(tickfont = list(size = 8)), 
+  height = 600, 
+  margin = list(l = 200), 
+  autosize = FALSE
+)
+
+
+
+
+
 cor.gems = cor(df.gems[,-1], data[,40:50])
-cor.gems[cor.gems > -0.1 & cor.gems < 0.1] = 0
+cor.gems[cor.gems > -0.15 & cor.gems < 0.15] = NA
 
 testdat = cor.gems %>%melt()
 
@@ -293,13 +311,18 @@ testdat = cor.gems %>%melt()
 plot.corgems = 
   testdat %>%
   ggplot(aes(x = Var2, y = Var1, fill = value)) +
-  geom_tile(show.legend = F) +
+  geom_tile() +
   #scale_fill_gradient2(low = "red", high = "blue", mid = "grey", na.value = "grey") 
+  #scale_fill_gradient2() +
   labs(title = "Correlation between Spotify features and GEMS", x = NULL, y = NULL) +
   theme_minimal() 
 
 
 plot.corgems
+
+#plot_ly(type = "heatmap", x = colnames(cor.gems), y = rownames(cor.gems), z = cor.gems, colorscale = "blues") 
+
+
 
 
 
@@ -341,5 +364,20 @@ Column
 --------------
 
 ### chart
+
+
+Literature
+========================
+
+column {data-width=500}
+------------------
+
+###
+
+
+Kawakami, A., Furukawa, K., Katahira, K., & Okanoya, K. (2013). Sad music induces pleasant 	emotion. Frontiers in Psychology, 4. doi: 10.3389/fpsyg.2013.00311
+
+
+Kawakami, A., & Katahira, K. (2015). Influence of trait empathy on the emotion evoked by 	sad music and on the preference for it. Frontiers in Psychology, 6. doi: 	10.3389/fpsyg.2015.01541 
 
 
